@@ -1,15 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+
 
 namespace MonoGameLibrary.Graphics
 {
-    internal class TextureRegion
+    public class TextureRegion
     {
         public Texture2D Texture { get; set; }
 
@@ -52,9 +47,10 @@ namespace MonoGameLibrary.Graphics
         // Extra parameters for rendering, offers individual X and Y scale param control 
         public void Draw(SpriteBatch sprite_batch, Vector2 pos, Color color, float rot, Vector2 origin, Vector2 scale, SpriteEffects effects, float layer_depth)
         {
-            Draw(
-               sprite_batch,
+            sprite_batch.Draw(
+               Texture,
                pos,
+               SrcRectangle,
                color,
                rot,
                origin,

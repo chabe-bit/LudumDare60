@@ -1,2 +1,4 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
+"C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/atlas-definition.xml","C:\Users\benja\source\repos\LudumDare60\LudumDare60\Content\bin\DesktopGL\Content\images/atlas-definition.xml","CopyItem","File",258,258,0.0022768
+"C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/atlas.png","C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/bin/DesktopGL/Content/images/atlas.xnb","TextureProcessor","Texture2DContent",590,16469,0.1509139
 "C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/monogames_logo.png","C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/bin/DesktopGL/Content/images/monogames_logo.xnb","TextureProcessor","Texture2DContent",16734,311381,0.142803

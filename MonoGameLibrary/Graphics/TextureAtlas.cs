@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGameLibrary.Graphics
 {
-    internal class TextureAtlas
+    public class TextureAtlas
     {
         // Two key members for managing texture regions:
         private Dictionary<string, TextureRegion> _regions; // Tracks textured regions, retrieving regions by name
