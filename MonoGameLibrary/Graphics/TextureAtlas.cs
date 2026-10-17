@@ -13,17 +13,21 @@ namespace MonoGameLibrary.Graphics
     {
         // Two key members for managing texture regions:
         private Dictionary<string, TextureRegion> _regions; // Tracks textured regions, retrieving regions by name
+        private Dictionary<string, Animation> _animations;
         public Texture2D Texture { get; set; }
 
+        
         public TextureAtlas()
         {
             _regions = new Dictionary<string, TextureRegion>();
+            _animations = new Dictionary<string, Animation>();
         }
 
         public TextureAtlas(Texture2D texture)
         {
             Texture = texture;
             _regions = new Dictionary<string, TextureRegion>();
+            _animations = new Dictionary<string, Animation>();
         }
 
         // Methods for managing texture regions and creating atlases 
@@ -108,17 +112,73 @@ namespace MonoGameLibrary.Graphics
                             }
                         }
                     }
+
+                    // Parse [Animations] for Animation and Frame
+                    var animation_elems = root.Element("Animations")?.Elements("Animation");
+
+
+                    if (animation_elems != null)
+                    {
+                        // for every animation element 
+                        foreach (var animation_elem in animation_elems)
+                        {
+                            // Parse for name and delay from [Animation]
+                            string name = animation_elem.Attribute("name")?.Value;
+                            float delay_ms = float.Parse(animation_elem.Attribute("delay")?.Value ?? "0");
+                            TimeSpan delay = TimeSpan.FromMilliseconds(delay_ms);
+
+                            List<TextureRegion> frames = new List<TextureRegion>();
+
+                            var frame_elems = animation_elem.Elements("Frame");
+
+                            if (frame_elems != null)
+                            {
+                                foreach (var frame_elem in frame_elems)
+                                {
+                                    string region_name = frame_elem.Attribute("region").Value;
+                                    TextureRegion region = atlas.GetRegion(region_name);
+                                    frames.Add(region);
+                                }
+                            }
+
+                            Animation animation = new Animation(frames, delay);
+                            atlas.AddAnimation(name, animation);
+                        }
+                    }
+
+
+                    return atlas;
                 }
             }
-
-            return atlas;
         }
 
+        // Sprite Methods 
         public Sprite CreateSprite(string region_name)
         {
             TextureRegion region = GetRegion(region_name);
             return new Sprite(region);
         }
 
+
+        // Animation Methods
+        public void AddAnimation(string name, Animation animation)
+        {
+            _animations.Add(name, animation);
+        }
+
+        public Animation GetAnimation(string name)
+        {
+            return _animations[name];
+        }
+
+        public bool RemoveAnimation(string name)
+        {
+            if (_animations[name] != null)
+            { 
+                return _animations.Remove(name);
+            }
+
+            return false;
+        }
     }
 }

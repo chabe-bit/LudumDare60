@@ -145,10 +145,9 @@ namespace LudumDare60
 
             TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
-            _slime = atlas.CreateSprite("slime");
-            _bat = atlas.CreateSprite("bat");
+            _slime = atlas.CreateSprite("slime-1");
+            _bat = atlas.CreateSprite("bat-1");
 
-            _bat = atlas.CreateSprite("bat");
             _bat.Scale = new Vector2(4.0f, 4.0f);
 
         }

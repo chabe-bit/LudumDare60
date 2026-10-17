@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LudumDare60")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3c13c7796d063d6063210bbfde5d9a30835af6f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57f22687c6d2ad07c767eed80f40613b4f134623")]
 [assembly: System.Reflection.AssemblyProductAttribute("LudumDare60")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LudumDare60")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
