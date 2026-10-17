@@ -115,10 +115,8 @@ namespace LudumDare60
 {
     public class Game1 : Core
     {
-       
-
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+        private Sprite _slime;
+        private Sprite _bat;
 
         public Game1() : base("LudumDare60", 1280, 720, false)
         {
@@ -136,13 +134,22 @@ namespace LudumDare60
         {
             base.LoadContent();
 
-     
+            /* 
             Texture2D atlas_texture = Content.Load<Texture2D>("images/atlas");
             TextureAtlas atlas = new TextureAtlas(atlas_texture);
 
             // Created the regions and ID'd by name  
             atlas.AddRegion("slime", 0, 0, 20, 20);
             atlas.AddRegion("bat", 20, 0, 20, 20);
+            */
+
+            TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
+
+            _slime = atlas.CreateSprite("slime");
+            _bat = atlas.CreateSprite("bat");
+
+            _bat = atlas.CreateSprite("bat");
+            _bat.Scale = new Vector2(4.0f, 4.0f);
 
         }
 
@@ -161,7 +168,11 @@ namespace LudumDare60
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            SpriteBatch.Begin();
+            _slime.Draw(SpriteBatch, Vector2.Zero);
+            _bat.Draw(SpriteBatch, new Vector2(_slime.Width + 10, 0));
 
+            SpriteBatch.End();
 
             base.Draw(gameTime);       
         }

@@ -114,7 +114,11 @@ namespace MonoGameLibrary.Graphics
             return atlas;
         }
 
+        public Sprite CreateSprite(string region_name)
+        {
+            TextureRegion region = GetRegion(region_name);
+            return new Sprite(region);
+        }
 
-    
     }
 }
