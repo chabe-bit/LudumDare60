@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LudumDare60/LudumDare60.csproj" />
+  <Project Path="MonoGameLibrary/MonoGameLibrary.csproj" />
+</Solution>
