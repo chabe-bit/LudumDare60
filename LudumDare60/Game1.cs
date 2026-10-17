@@ -115,8 +115,7 @@ namespace LudumDare60
 {
     public class Game1 : Core
     {
-        private Sprite _slime;
-        private Sprite _bat;
+        private AnimatedSprite _slime;
 
         public Game1() : base("LudumDare60", 1280, 720, false)
         {
@@ -145,11 +144,8 @@ namespace LudumDare60
 
             TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
-            _slime = atlas.CreateSprite("slime-1");
-            _bat = atlas.CreateSprite("bat-1");
-
-            _bat.Scale = new Vector2(4.0f, 4.0f);
-
+            _slime = atlas.CreateAnimatedSprite("slime-animation");
+            _slime.Scale = new Vector2(4.0f, 4.0f);
         }
 
         protected override void Update(GameTime gameTime)
@@ -159,6 +155,8 @@ namespace LudumDare60
 
             // TODO: Add your update logic here
 
+            _slime.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -167,9 +165,8 @@ namespace LudumDare60
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            SpriteBatch.Begin();
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
             _slime.Draw(SpriteBatch, Vector2.Zero);
-            _bat.Draw(SpriteBatch, new Vector2(_slime.Width + 10, 0));
 
             SpriteBatch.End();
 

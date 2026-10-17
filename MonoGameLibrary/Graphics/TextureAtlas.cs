@@ -180,5 +180,12 @@ namespace MonoGameLibrary.Graphics
 
             return false;
         }
+
+        public AnimatedSprite CreateAnimatedSprite(string name)
+        {
+            Animation animation = GetAnimation(name);
+            return new AnimatedSprite(animation);
+        }
+
     }
 }
