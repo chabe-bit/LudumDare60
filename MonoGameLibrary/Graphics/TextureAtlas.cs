@@ -1,0 +1,120 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
+namespace MonoGameLibrary.Graphics
+{
+    internal class TextureAtlas
+    {
+        // Two key members for managing texture regions:
+        private Dictionary<string, TextureRegion> _regions; // Tracks textured regions, retrieving regions by name
+        public Texture2D Texture { get; set; }
+
+        public TextureAtlas()
+        {
+            _regions = new Dictionary<string, TextureRegion>();
+        }
+
+        public TextureAtlas(Texture2D texture)
+        {
+            Texture = texture;
+            _regions = new Dictionary<string, TextureRegion>();
+        }
+
+        // Methods for managing texture regions and creating atlases 
+
+        // We are effectively taking cut outs from a texture of which we are calling regions,
+        // storing them into a dictionary with an ID form of a string name. Refering to the string
+        // name will find the region. 
+
+        public void AddRegion(string name, int x, int y, int width, int height)
+        {
+            TextureRegion region = new TextureRegion(Texture, x, y, width, height);
+            _regions.Add(name, region); // Add() is a Dictionary method that adds a new item into the dictionary 
+        }
+   
+        // Fetch region from texture by name
+        public TextureRegion GetRegion(string name)
+        {
+            return _regions[name];
+        }
+    
+
+        public bool RemoveRegion(string name)
+        {
+            if (_regions[name] != null)
+            {
+                return _regions.Remove(name);
+            }
+
+            return false;
+        }
+
+        public void Clear()
+        {
+            _regions.Clear(); // Remove everything from the dictionary
+        }
+    
+        public static TextureAtlas FromFile(ContentManager content, string filename)
+        {
+            TextureAtlas atlas = new TextureAtlas();
+
+            // Find the pathway 
+            string path = Path.Combine(content.RootDirectory, filename);
+            
+            // Invalid path? Return empty atlas, do not end program
+            if (path == null)
+            {
+                Console.Error.WriteLine($"File: {filename} is not found.");
+                return atlas;
+            }
+
+            // Open the file and stream it
+            using (Stream stream = TitleContainer.OpenStream(path))
+            {
+                using (XmlReader xml_reader = XmlReader.Create(stream))
+                {
+                    XDocument doc = XDocument.Load(xml_reader);
+                    XElement root = doc.Root;
+
+
+                    string texture_path = root.Element("Texture").Value;
+                    atlas.Texture = content.Load<Texture2D>(texture_path);
+                    
+                    // The ? operator is a null guard. It says, under "Regions", is there 
+                    // an element "Region"?
+                    var regions = root.Element("Regions")?.Elements("Region");
+                
+                    if (regions != null)
+                    {
+                        foreach (var region in regions)
+                        {
+                            string name = region.Attribute("name")?.Value;
+
+                            // int.Parse() turns string into int
+                            int x = int.Parse(region.Attribute("x")?.Value ?? "0");
+                            int y = int.Parse(region.Attribute("y")?.Value ?? "0");
+                            int width = int.Parse(region.Attribute("width")?.Value ?? "0");
+                            int height = int.Parse(region.Attribute("height")?.Value ?? "0");
+                    
+                            if (!string.IsNullOrEmpty(name))
+                            {
+                                atlas.AddRegion(name, x, y, width, height);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return atlas;
+        }
+
+
+    
+    }
+}

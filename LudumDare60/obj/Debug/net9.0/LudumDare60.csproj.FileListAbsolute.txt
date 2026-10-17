@@ -37,3 +37,4 @@ C:\Users\benja\source\repos\LudumDare60\LudumDare60\obj\Debug\net9.0\refint\Ludu
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\obj\Debug\net9.0\LudumDare60.pdb
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\obj\Debug\net9.0\LudumDare60.genruntimeconfig.cache
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\obj\Debug\net9.0\ref\LudumDare60.dll
+C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\monogames_logo.xnb

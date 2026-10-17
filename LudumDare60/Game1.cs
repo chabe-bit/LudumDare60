@@ -30,6 +30,9 @@ namespace LudumDare60
         protected override void LoadContent()
         {
             base.LoadContent();
+
+            _logo = Content.Load<Texture2D>("images/monogames_logo");
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -47,8 +50,18 @@ namespace LudumDare60
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            Vector2 pos;
+            pos.X = (Window.ClientBounds.Width * 0.5f) - (_logo.Width * 0.5f);
+            pos.Y = (Window.ClientBounds.Height * 0.5f) - (_logo.Height * 0.5f);
 
-            base.Draw(gameTime);
+            SpriteBatch.Begin();
+            SpriteBatch.Draw(_logo, 
+                            pos, 
+                            Color.White);
+            SpriteBatch.End();
+            
+
+            base.Draw(gameTime);       
         }
     }
 }
