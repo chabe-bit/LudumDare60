@@ -1,0 +1,50 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using MonoGameLibrary.Graphics;
+using System;
+
+namespace LudumDare60
+{
+    public class EntityDef
+    {
+        // Entity Metadata 
+        public string name;
+        public TextureAtlas atlas;
+        public EntityKind kind;
+
+        // stats 
+        public float speed;
+        public int max_hp;
+        public float radius;
+
+        public float pixels_per_unit = 250f;
+        public Vector2 scale = Vector2.One;
+        public Color tint = Color.White;
+
+        public SoundEffect[] step_sfx;
+        public SoundEffect[] attack_sfx; // todo 
+        public SoundEffect[] death_sfx; // todo 
+        public int[] walk_frames = { 0, 2 };
+
+        public Animation[,] sprite_anims = new Animation[2, 4];
+        public bool[,] sprite_flip = new bool[2, 4];
+
+
+        public void SetAnim(Animation anim)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    sprite_anims[i, j] = anim;
+                    sprite_flip[i, j] = false;
+                }
+            }
+        }
+
+        public void LoadAnim(string name)
+        {
+
+        }
+    }
+}

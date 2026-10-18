@@ -37,6 +37,7 @@ namespace LudumDare60
         float _spawn_timer = 1f;
         const float spawn_interval = 3f;
         const int max_enemies = 10;
+        Vector3 move = Vector3.Zero;
 
 
         public Game1() : base("LudumDare60", 1280, 720, false) { }
@@ -99,6 +100,28 @@ namespace LudumDare60
             return ent;
         }
 
+        // Abstracting away Keyboard 
+        private void InputSystem(KeyboardState kb)
+        {
+            if (kb.IsKeyDown(Keys.Escape)) Exit();
+
+        }
+
+        private void MovementSystem(float dt)
+        {
+            if (move != Vector3.Zero)
+            {
+                move.Normalize();
+                _robo_pos += move * 5f * dt;
+                _robo_facing = move;
+            }
+        }
+
+        private void AnimationSystem(GameTime game_time)
+        {
+
+        }
+
         private void SetAnimation(RoboState state, Direction dir)
         {
             if (state == _robo_state && dir == _robo_dir)
@@ -127,24 +150,23 @@ namespace LudumDare60
 
         protected override void Update(GameTime gameTime)
         {
-            var kb = Keyboard.GetState();
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
+            var kb = Keyboard.GetState();
+            
             if (kb.IsKeyDown(Keys.Escape)) Exit();
-
             Vector3 move = Vector3.Zero;
             if (kb.IsKeyDown(Keys.W)) { move += _camera.Forward; }
             if (kb.IsKeyDown(Keys.S)) { move -= _camera.Forward; }
             if (kb.IsKeyDown(Keys.D)) { move += _camera.Right; }
             if (kb.IsKeyDown(Keys.A)) { move -= _camera.Right; }
-
+            
+            /*        
             if (move != Vector3.Zero)
             {
                 move.Normalize();
                 _robo_pos += move * 5f * dt;
                 _robo_facing = move;
             }
-
             int frame = _robo.CurrFrame;
             if (frame != _robo_last_frame)
             {
@@ -155,16 +177,14 @@ namespace LudumDare60
 
                 _robo_last_frame = frame;
             }
-            
-
             RoboState state = move != Vector3.Zero ? RoboState.Walk : RoboState.Idle;
             Direction dir = PickDirection(_robo_facing, _camera);
 
             if (_robo_anims[(int)state, (int)dir] == null)
                 state = RoboState.Idle;
-
             SetAnimation(state, dir);
             _robo.Update(gameTime);
+            */
 
             // camera follows the robot
             _camera.Target = _robo_pos;
@@ -196,7 +216,8 @@ namespace LudumDare60
             _grid.Draw(view, projection);
 
             _billboards.Begin(view, projection, _robo_atlas.Texture);
-            _billboards.Draw(_robo, _robo_pos);
+
+
             _billboards.End();
 
             base.Draw(gameTime);
