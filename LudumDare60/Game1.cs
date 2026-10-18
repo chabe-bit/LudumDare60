@@ -17,10 +17,9 @@ namespace LudumDare60
         BillboardRenderer _billboards;
 
         TextureAtlas _robo_atlas;
-        enum Direction { Front, Back, Left, Right };
-        enum RoboState { Idle, Walk };
+
         Animation[,] _robo_anims = new Animation[2, 4];
-        AnimatedSprite[] _robo = new AnimatedSprite[2];
+        AnimatedSprite _robo;
         RoboState _robo_state = RoboState.Idle;
         Direction _robo_dir = Direction.Front;
         Vector3 _robo_facing = Vector3.Backward;
