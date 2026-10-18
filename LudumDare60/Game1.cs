@@ -115,8 +115,13 @@ namespace LudumDare60
     public class Game1 : Core
     {
         private AnimatedSprite _slime;
-
         private Vector2 _slime_pos;
+
+        // Robo idle anim 
+        private AnimatedSprite _robo_idle_front;
+        private Vector2 robo_pos;
+
+
         private const float MOVEMENT_SPEED = 5.0f;
 
         public Game1() : base("LudumDare60", 1280, 720, false)
@@ -141,6 +146,11 @@ namespace LudumDare60
 
             _slime = atlas.CreateAnimatedSprite("slime-animation");
             _slime.Scale = new Vector2(4.0f, 4.0f);
+
+            TextureAtlas _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
+
+            _robo_idle_front = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
+            _robo_idle_front.Scale = new Vector2(0.5f, 0.5f);
         }
 
         protected override void Update(GameTime gameTime)
@@ -151,6 +161,7 @@ namespace LudumDare60
             // TODO: Add your update logic here
 
             _slime.Update(gameTime);
+            _robo_idle_front.Update(gameTime);
 
             CheckKeyboardInput();
             CheckGamePadInput();
@@ -206,6 +217,8 @@ namespace LudumDare60
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
             _slime.Draw(SpriteBatch, _slime_pos);
+
+            _robo_idle_front.Draw(SpriteBatch, _slime_pos);
                 
             SpriteBatch.End();
 

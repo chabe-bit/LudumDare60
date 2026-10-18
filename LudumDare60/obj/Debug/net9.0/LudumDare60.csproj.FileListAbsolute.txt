@@ -41,3 +41,6 @@ C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\ima
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\atlas.xnb
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\atlas_definition.xml
 C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\atlas-definition.xml
+C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\robo-atlas-definition.xml.xml
+C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\robot_spritesheet.xnb
+C:\Users\benja\source\repos\LudumDare60\LudumDare60\bin\Debug\net9.0\Content\images\robo-atlas-definition.xml

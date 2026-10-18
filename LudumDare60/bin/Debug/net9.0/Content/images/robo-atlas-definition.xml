@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/robot_spritesheet</Texture>
+	<Regions>
+		<Region name="robo-idle-front-1" x="0"   y="0" width="500" height="500" />
+		<Region name="robo-idle-front-2" x="500" y="0" width="500" height="500" />
+
+		<Region name="robo-idle-back-1" x="1000" y="0" width="500" height="500" />
+		<Region name="robo-idle-back-2" x="1500" y="0" width="500" height="500" />
+
+		<Region name="robo-idle-right-1" x="0"   y="500" width="500" height="500" />
+		<Region name="robo-idle-right-2" x="500" y="500" width="500" height="500" />
+
+	</Regions>
+	<Animations>
+		<Animation name ="robo-idle-front-animation" delay="300">
+			<Frame region="robo-idle-front-1"/>
+			<Frame region="robo-idle-front-2"/>
+		</Animation>
+
+	</Animations>
+</TextureAtlas>

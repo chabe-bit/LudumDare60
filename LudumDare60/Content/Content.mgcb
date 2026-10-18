@@ -40,3 +40,18 @@
 /processorParam:TextureFormat=Color
 /build:images/monogames_logo.png
 
+#begin images/robo-atlas-definition.xml
+/copy:images/robo-atlas-definition.xml
+
+#begin images/robot_spritesheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/robot_spritesheet.png
+
