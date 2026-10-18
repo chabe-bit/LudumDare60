@@ -35,6 +35,8 @@ namespace LudumDare60
 
         public Game1() : base("LudumDare60", 1280, 720, false) { }
 
+
+
         protected override void Initialize()
         {
             base.Initialize();   // in this template, Initialize calls LoadContent
