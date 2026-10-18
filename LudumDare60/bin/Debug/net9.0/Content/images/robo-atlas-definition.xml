@@ -11,12 +11,20 @@
 		<Region name="robo-idle-right-1" x="0"   y="500" width="500" height="500" />
 		<Region name="robo-idle-right-2" x="500" y="500" width="500" height="500" />
 
+		
 	</Regions>
 	<Animations>
 		<Animation name ="robo-idle-front-animation" delay="300">
 			<Frame region="robo-idle-front-1"/>
 			<Frame region="robo-idle-front-2"/>
 		</Animation>
-
+		<Animation name ="robo-idle-back-animation" delay="300">
+			<Frame region="robo-idle-back-1"/>
+			<Frame region="robo-idle-back-2"/>
+		</Animation>
+		<Animation name ="robo-idle-right-animation" delay="300">
+			<Frame region="robo-idle-right-1"/>
+			<Frame region="robo-idle-right-2"/>
+		</Animation>
 	</Animations>
 </TextureAtlas>

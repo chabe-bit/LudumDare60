@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using MonoGameLibrary.Input;
 
 namespace MonoGameLibrary
 {
@@ -14,7 +15,8 @@ namespace MonoGameLibrary
         public static new GraphicsDevice GraphicsDevice { get; private set; }
         public static SpriteBatch SpriteBatch { get; private set; }
         public static new ContentManager Content { get; private set; }
-
+        public static InputManager Input { get; private set; }
+        public static bool ExitOnEscape { get; set; }
 
         // Funcs 
         public Core(string title, int width, int height, bool is_full_screen)
@@ -45,7 +47,9 @@ namespace MonoGameLibrary
 
             Content.RootDirectory = "Content"; // Looks at the project folder AS our root directory and looks for "Content" folder.
 
-            IsMouseVisible = true; // turn off later 
+            IsMouseVisible = true;
+
+            ExitOnEscape = true;
         }
 
         // Protected means this function from this class cannot be accessed externally, other than those that 
@@ -55,7 +59,18 @@ namespace MonoGameLibrary
             base.Initialize();
             GraphicsDevice = base.GraphicsDevice; // Initted this copy with the original 
             SpriteBatch = new SpriteBatch(GraphicsDevice);
+            Input = new InputManager();
         }
 
+        protected override void Update(GameTime game_time)
+        {
+            Input.Update(game_time);
+            if (ExitOnEscape && Input.Keyboard.WasKeyJustPressed(Microsoft.Xna.Framework.Input.Keys.Escape))
+            {
+                Exit();
+            }
+
+            base.Update(game_time);
+        }
     }
 }

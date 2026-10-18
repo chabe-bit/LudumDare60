@@ -9,7 +9,7 @@ namespace MonoGameLibrary.Graphics
 
         readonly GraphicsDevice _gd;
         readonly AlphaTestEffect _effect;
-        readonly VertexPositionTexture[] _verts = new VertexPositionTexture[MaxQuads * 4];
+        readonly VertexPositionColorTexture[] _verts = new VertexPositionColorTexture[MaxQuads * 4];
         readonly short[] _indices = new short[MaxQuads * 6];
 
         int _count;
@@ -25,6 +25,7 @@ namespace MonoGameLibrary.Graphics
             {
                 AlphaFunction = CompareFunction.Greater,
                 ReferenceAlpha = 128,          // pixels with alpha <= 128 are discarded
+                VertexColorEnabled = true,   // ← use per-vertex tint
             };
 
             // indices never change: two triangles per quad
@@ -56,7 +57,14 @@ namespace MonoGameLibrary.Graphics
             _up = Vector3.Up;
         }
 
-        public void Draw(Rectangle src, Vector3 feetPosition, bool flipX = false)
+        public void Draw(Sprite sprite, Vector3 feetPosition)
+        {
+            bool flipX = (sprite.Effects & SpriteEffects.FlipHorizontally) != 0;
+            Draw(sprite.Region.SrcRectangle, feetPosition, sprite.Color, sprite.Scale, flipX);
+        }
+
+
+        public void Draw(Rectangle src, Vector3 feetPosition, Color color, Vector2 scale, bool flipX = false)
         {
             if (_count == MaxQuads) Flush();
 
@@ -80,10 +88,10 @@ namespace MonoGameLibrary.Graphics
             if (flipX) (u0, u1) = (u1, u0);
 
             int v = _count * 4;
-            _verts[v + 0] = new VertexPositionTexture(bl, new Vector2(u0, v1));
-            _verts[v + 1] = new VertexPositionTexture(tl, new Vector2(u0, v0));
-            _verts[v + 2] = new VertexPositionTexture(tr, new Vector2(u1, v0));
-            _verts[v + 3] = new VertexPositionTexture(br, new Vector2(u1, v1));
+            _verts[v + 0] = new VertexPositionColorTexture(bl, color, new Vector2(u0, v1));
+            _verts[v + 1] = new VertexPositionColorTexture(tl, color, new Vector2(u0, v0));
+            _verts[v + 2] = new VertexPositionColorTexture(tr, color, new Vector2(u1, v0));
+            _verts[v + 3] = new VertexPositionColorTexture(br, color, new Vector2(u1, v1));
             _count++;
         }
 

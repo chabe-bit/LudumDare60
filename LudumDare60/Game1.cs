@@ -1,16 +1,17 @@
-﻿/*
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
+using System;
+using System.Diagnostics;
 
 namespace LudumDare60
 {
     public class Game1 : Core
     {
         TextureAtlas _atlas;
-        TextureRegion _slime;
+        AnimatedSprite _slime;
         TextureRegion _bat;
 
         Camera3D _camera;
@@ -21,6 +22,16 @@ namespace LudumDare60
         Vector3 _batPos = new Vector3(3, 1.5f, -2);  // floating a bit above the ground
         bool _slimeFacingLeft;
 
+        TextureAtlas _robo_atlas;
+        enum Direction { Front, Back, Left, Right };
+        enum RoboState { Idle, Walk };
+        Animation[,] _robo_anims = new Animation[2, 4];
+        AnimatedSprite _robo;
+        RoboState _robo_state = RoboState.Idle;
+        Direction _robo_dir = Direction.Front;
+        Vector3 _robo_facing = Vector3.Backward;
+        Vector3 _robo_pos;
+
         public Game1() : base("Dungeon Slime", 1280, 720, false) { }
 
         protected override void Initialize()
@@ -29,14 +40,40 @@ namespace LudumDare60
 
             _camera = new Camera3D();
             _grid = new GroundGrid(GraphicsDevice);
-            _billboards = new BillboardRenderer(GraphicsDevice) { PixelsPerUnit = 16f };
+            _billboards = new BillboardRenderer(GraphicsDevice) { PixelsPerUnit = 250f };
         }
 
         protected override void LoadContent()
         {
             _atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
-            _slime = _atlas.GetRegion("slime");
-            _bat = _atlas.GetRegion("bat");
+            _slime = _atlas.CreateAnimatedSprite("slime-animation");
+
+            _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
+            _robo_anims[(int)RoboState.Idle, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-idle-front-animation");
+            _robo_anims[(int)RoboState.Idle, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-idle-back-animation");
+            _robo_anims[(int)RoboState.Idle, (int)Direction.Right]   = _robo_atlas.GetAnimation("robo-idle-right-animation");
+            _robo_anims[(int)RoboState.Idle, (int)Direction.Left]  = _robo_anims[(int)RoboState.Idle, (int)Direction.Right];
+
+            _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
+            _robo.Scale = new Vector2(0.5f, 0.5f);
+        }
+
+        private void SetAnimation(RoboState state, Direction dir)
+        {
+            if (state == _robo_state && dir == _robo_dir)
+                return;
+
+            Animation anim = _robo_anims[(int)state, (int)dir];
+            if (anim == null)
+            {
+                Debug.WriteLine($"ERROR: no animation for {state}, {dir}");
+                return;   // keep playing whatever it had
+            }
+
+            _robo_state = state;
+            _robo_dir = dir;
+            _robo.Animation = anim;
+            _robo.Effects = dir == Direction.Left ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         }
 
         protected override void Update(GameTime gameTime)
@@ -67,19 +104,37 @@ namespace LudumDare60
             if (move != Vector3.Zero)
             {
                 move.Normalize();
-                _slimePos += move * 5f * dt;
-
-                // flip sprite based on screen-relative left/right
-                float sideways = Vector3.Dot(move, _camera.Right);
-                if (sideways < -0.1f) _slimeFacingLeft = true;
-                if (sideways > 0.1f) _slimeFacingLeft = false;
+                _robo_pos += move * 5f * dt;
+                _robo_facing = move;
             }
 
-            // camera follows the slime
-            _camera.Target = _slimePos;
+            RoboState state = move != Vector3.Zero ? RoboState.Walk : RoboState.Idle;
+            Direction dir = PickDirection(_robo_facing, _camera);
+
+            if (_robo_anims[(int)state, (int)dir] == null)
+                state = RoboState.Idle;
+
+            SetAnimation(state, dir);
+            _robo.Update(gameTime);
+
+            // camera follows the robot
+            _camera.Target = _robo_pos;
             _camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;
 
+
             base.Update(gameTime);
+        }
+
+        private static Direction PickDirection(Vector3 facing, Camera3D cam)
+        {
+            float forward = Vector3.Dot(facing, cam.Forward);
+            float side = Vector3.Dot(facing, cam.Right);
+
+            if (MathF.Abs(forward) > MathF.Abs(side))
+            {
+                return forward > 0 ? Direction.Back : Direction.Front;
+            }
+            return side > 0 ? Direction.Right : Direction.Left;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -91,18 +146,16 @@ namespace LudumDare60
 
             _grid.Draw(view, projection);
 
-            _billboards.Begin(view, projection, _atlas.Texture);
-            _billboards.Draw(_slime.SrcRectangle, _slimePos, _slimeFacingLeft);
-            _billboards.Draw(_bat.SrcRectangle, _batPos);
+            _billboards.Begin(view, projection, _robo_atlas.Texture);
+            _billboards.Draw(_robo, _robo_pos);
             _billboards.End();
 
             base.Draw(gameTime);
         }
     }
 }
-*/
 
-
+/*
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -119,7 +172,20 @@ namespace LudumDare60
 
         // Robo idle anim 
         private AnimatedSprite _robo_idle_front;
-        private Vector2 robo_pos;
+        private AnimatedSprite _robo;
+        
+        private Vector2 _robo_pos;
+
+        private enum PlayerState
+        {  
+            IDLE_FRONT,
+            IDLE_BACK,
+            IDLE_LEFT,
+            IDLE_RIGHT
+        };
+
+        // default state
+        PlayerState p_state = PlayerState.IDLE_FRONT;
 
 
         private const float MOVEMENT_SPEED = 5.0f;
@@ -151,6 +217,10 @@ namespace LudumDare60
 
             _robo_idle_front = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
             _robo_idle_front.Scale = new Vector2(0.5f, 0.5f);
+
+            // Start animation direction as front 
+            _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
+            _robo.Scale = new Vector2(0.5f, 0.5f);
         }
 
         protected override void Update(GameTime gameTime)
@@ -161,7 +231,19 @@ namespace LudumDare60
             // TODO: Add your update logic here
 
             _slime.Update(gameTime);
-            _robo_idle_front.Update(gameTime);
+            _robo.Update(gameTime);
+
+            switch (p_state)
+            {
+                case PlayerState.IDLE_FRONT:
+                    
+                    break;
+            }
+
+            // If the player taps a key direction, it's detected as a signal to change in that direction.
+            // Convsersly, holding a key in a direction is a signal to not only face that direction but animate the walk animation. 
+
+
 
             CheckKeyboardInput();
             CheckGamePadInput();
@@ -174,6 +256,7 @@ namespace LudumDare60
             KeyboardState keyboard_state = Keyboard.GetState();
             float speed = MOVEMENT_SPEED;
 
+
             if (keyboard_state.IsKeyDown(Keys.Space))
             {
                 
@@ -182,21 +265,36 @@ namespace LudumDare60
             if (keyboard_state.IsKeyDown(Keys.W))
             {
                 _slime_pos.Y -= speed;
+                _robo_pos.Y -= speed;
+
+                p_state = PlayerState.IDLE_BACK;
             }
 
             if (keyboard_state.IsKeyDown(Keys.S))
             {
                 _slime_pos.Y += speed;
+                _robo_pos.Y += speed;
+
+                p_state = PlayerState.IDLE_RIGHT;
+
             }
 
             if (keyboard_state.IsKeyDown(Keys.A))
             {
                 _slime_pos.X -= speed;
+                _robo_pos.X -= speed;
+                
+                p_state = PlayerState.IDLE_LEFT;
+
             }
 
             if (keyboard_state.IsKeyDown(Keys.D))
             {
                 _slime_pos.X += speed;
+                _robo_pos.X += speed;
+
+                p_state = PlayerState.IDLE_FRONT;
+
             }
         }
 
@@ -218,7 +316,7 @@ namespace LudumDare60
 
             _slime.Draw(SpriteBatch, _slime_pos);
 
-            _robo_idle_front.Draw(SpriteBatch, _slime_pos);
+            _robo.Draw(SpriteBatch, _robo_pos);
                 
             SpriteBatch.End();
 
@@ -226,3 +324,4 @@ namespace LudumDare60
         }
     }
 }
+*/

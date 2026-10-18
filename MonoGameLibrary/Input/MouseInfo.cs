@@ -52,6 +52,12 @@ namespace MonoGameLibrary.Input
             CurrState = Mouse.GetState();
         }
 
+        public void Update()
+        {
+            PrevState = CurrState;
+            CurrState = Mouse.GetState();
+        }
+
         public bool IsButtonDown(MouseButton button)
         {
             switch (button)
