@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using System;
@@ -31,7 +33,12 @@ namespace LudumDare60
         Direction _robo_dir = Direction.Front;
         Vector3 _robo_facing = Vector3.Backward;
         Vector3 _robo_pos;
+        int _robo_idle = (int)RoboState.Idle;
+        int _robo_walk = (int)RoboState.Walk;
 
+        // Audio -> SFX and Music
+
+        
         public Game1() : base("Dungeon Slime", 1280, 720, false) { }
 
         protected override void Initialize()
@@ -49,10 +56,16 @@ namespace LudumDare60
             _slime = _atlas.CreateAnimatedSprite("slime-animation");
 
             _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
-            _robo_anims[(int)RoboState.Idle, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-idle-front-animation");
-            _robo_anims[(int)RoboState.Idle, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-idle-back-animation");
-            _robo_anims[(int)RoboState.Idle, (int)Direction.Right]   = _robo_atlas.GetAnimation("robo-idle-right-animation");
-            _robo_anims[(int)RoboState.Idle, (int)Direction.Left]  = _robo_anims[(int)RoboState.Idle, (int)Direction.Right];
+            _robo_anims[_robo_idle, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-idle-front-animation");
+            _robo_anims[_robo_idle, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-idle-back-animation");
+            _robo_anims[_robo_idle, (int)Direction.Right]  = _robo_atlas.GetAnimation("robo-idle-right-animation");
+            _robo_anims[_robo_idle, (int)Direction.Left]   = _robo_anims[_robo_idle, (int)Direction.Right];
+
+            _robo_anims[_robo_walk, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-walk-front-animation");
+            _robo_anims[_robo_walk, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-walk-back-animation");
+            _robo_anims[_robo_walk, (int)Direction.Right]  = _robo_atlas.GetAnimation("robo-walk-right-animation");
+            _robo_anims[_robo_walk, (int)Direction.Left]   = _robo_anims[_robo_walk, (int)Direction.Right];
+
 
             _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
             _robo.Scale = new Vector2(0.5f, 0.5f);
@@ -67,7 +80,7 @@ namespace LudumDare60
             if (anim == null)
             {
                 Debug.WriteLine($"ERROR: no animation for {state}, {dir}");
-                return;   // keep playing whatever it had
+                return;   
             }
 
             _robo_state = state;
@@ -154,174 +167,3 @@ namespace LudumDare60
         }
     }
 }
-
-/*
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-
-using MonoGameLibrary;
-using MonoGameLibrary.Graphics; // We now have access to the Texture methods from MGL
-
-namespace LudumDare60
-{
-    public class Game1 : Core
-    {
-        private AnimatedSprite _slime;
-        private Vector2 _slime_pos;
-
-        // Robo idle anim 
-        private AnimatedSprite _robo_idle_front;
-        private AnimatedSprite _robo;
-        
-        private Vector2 _robo_pos;
-
-        private enum PlayerState
-        {  
-            IDLE_FRONT,
-            IDLE_BACK,
-            IDLE_LEFT,
-            IDLE_RIGHT
-        };
-
-        // default state
-        PlayerState p_state = PlayerState.IDLE_FRONT;
-
-
-        private const float MOVEMENT_SPEED = 5.0f;
-
-        public Game1() : base("LudumDare60", 1280, 720, false)
-        {
-
-        }
-
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-
-          
-
-            TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
-
-            _slime = atlas.CreateAnimatedSprite("slime-animation");
-            _slime.Scale = new Vector2(4.0f, 4.0f);
-
-            TextureAtlas _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
-
-            _robo_idle_front = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
-            _robo_idle_front.Scale = new Vector2(0.5f, 0.5f);
-
-            // Start animation direction as front 
-            _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
-            _robo.Scale = new Vector2(0.5f, 0.5f);
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
-
-            _slime.Update(gameTime);
-            _robo.Update(gameTime);
-
-            switch (p_state)
-            {
-                case PlayerState.IDLE_FRONT:
-                    
-                    break;
-            }
-
-            // If the player taps a key direction, it's detected as a signal to change in that direction.
-            // Convsersly, holding a key in a direction is a signal to not only face that direction but animate the walk animation. 
-
-
-
-            CheckKeyboardInput();
-            CheckGamePadInput();
-
-            base.Update(gameTime);
-        }
-
-        private void CheckKeyboardInput()
-        {
-            KeyboardState keyboard_state = Keyboard.GetState();
-            float speed = MOVEMENT_SPEED;
-
-
-            if (keyboard_state.IsKeyDown(Keys.Space))
-            {
-                
-            }
-
-            if (keyboard_state.IsKeyDown(Keys.W))
-            {
-                _slime_pos.Y -= speed;
-                _robo_pos.Y -= speed;
-
-                p_state = PlayerState.IDLE_BACK;
-            }
-
-            if (keyboard_state.IsKeyDown(Keys.S))
-            {
-                _slime_pos.Y += speed;
-                _robo_pos.Y += speed;
-
-                p_state = PlayerState.IDLE_RIGHT;
-
-            }
-
-            if (keyboard_state.IsKeyDown(Keys.A))
-            {
-                _slime_pos.X -= speed;
-                _robo_pos.X -= speed;
-                
-                p_state = PlayerState.IDLE_LEFT;
-
-            }
-
-            if (keyboard_state.IsKeyDown(Keys.D))
-            {
-                _slime_pos.X += speed;
-                _robo_pos.X += speed;
-
-                p_state = PlayerState.IDLE_FRONT;
-
-            }
-        }
-
-
-
-
-        private void CheckGamePadInput()
-        {
-
-        }
-
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-            _slime.Draw(SpriteBatch, _slime_pos);
-
-            _robo.Draw(SpriteBatch, _robo_pos);
-                
-            SpriteBatch.End();
-
-            base.Draw(gameTime);       
-        }
-    }
-}
-*/

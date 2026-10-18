@@ -4,27 +4,57 @@
 	<Regions>
 		<Region name="robo-idle-front-1" x="0"   y="0" width="500" height="500" />
 		<Region name="robo-idle-front-2" x="500" y="0" width="500" height="500" />
-
 		<Region name="robo-idle-back-1" x="1000" y="0" width="500" height="500" />
 		<Region name="robo-idle-back-2" x="1500" y="0" width="500" height="500" />
-
 		<Region name="robo-idle-right-1" x="0"   y="500" width="500" height="500" />
 		<Region name="robo-idle-right-2" x="500" y="500" width="500" height="500" />
 
+		<Region name="robo-walk-front-1" x="0"    y="1000" width="500" height="500"/>
+		<Region name="robo-walk-front-2" x="500"  y="1000" width="500" height="500"/>
+		<Region name="robo-walk-front-3" x="1000" y="1000" width="500" height="500"/>
+		<Region name="robo-walk-front-4" x="1500" y="1000" width="500" height="500"/>
+		<Region name="robo-walk-back-1" x="0"    y="1500" width="500" height="500"/>
+		<Region name="robo-walk-back-2" x="500"  y="1500" width="500" height="500"/>
+		<Region name="robo-walk-back-3" x="1000" y="1500" width="500" height="500"/>
+		<Region name="robo-walk-back-4" x="1500" y="1500" width="500" height="500"/>
+		<Region name="robo-walk-right-1" x="0"    y="2000" width="500" height="500"/>
+		<Region name="robo-walk-right-2" x="500"  y="2000" width="500" height="500"/>
+		<Region name="robo-walk-right-3" x="1000" y="2000" width="500" height="500"/>
+		<Region name="robo-walk-right-4" x="1500" y="2000" width="500" height="500"/>
+		
 		
 	</Regions>
 	<Animations>
-		<Animation name ="robo-idle-front-animation" delay="300">
+		<Animation name ="robo-idle-front-animation" delay="250">
 			<Frame region="robo-idle-front-1"/>
 			<Frame region="robo-idle-front-2"/>
 		</Animation>
-		<Animation name ="robo-idle-back-animation" delay="300">
+		<Animation name ="robo-idle-back-animation"  delay="250">
 			<Frame region="robo-idle-back-1"/>
 			<Frame region="robo-idle-back-2"/>
 		</Animation>
-		<Animation name ="robo-idle-right-animation" delay="300">
+		<Animation name ="robo-idle-right-animation" delay="250">
 			<Frame region="robo-idle-right-1"/>
 			<Frame region="robo-idle-right-2"/>
+		</Animation>
+
+		<Animation name ="robo-walk-front-animation" delay="125">
+			<Frame region="robo-walk-front-1"/>
+			<Frame region="robo-walk-front-2"/>
+			<Frame region="robo-walk-front-3"/>
+			<Frame region="robo-walk-front-4"/>
+		</Animation>
+		<Animation name ="robo-walk-back-animation"  delay="125">
+			<Frame region="robo-walk-back-1"/>
+			<Frame region="robo-walk-back-2"/>
+			<Frame region="robo-walk-back-3"/>
+			<Frame region="robo-walk-back-4"/>
+		</Animation>
+		<Animation name ="robo-walk-right-animation" delay="125">
+			<Frame region="robo-walk-right-1"/>
+			<Frame region="robo-walk-right-2"/>
+			<Frame region="robo-walk-right-3"/>
+			<Frame region="robo-walk-right-4"/>
 		</Animation>
 	</Animations>
 </TextureAtlas>
