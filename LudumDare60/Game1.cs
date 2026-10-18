@@ -12,23 +12,15 @@ namespace LudumDare60
 {
     public class Game1 : Core
     {
-        TextureAtlas _atlas;
-        AnimatedSprite _slime;
-        TextureRegion _bat;
-
         Camera3D _camera;
         GroundGrid _grid;
         BillboardRenderer _billboards;
-
-        Vector3 _slimePos = Vector3.Zero;            // world position (feet), Y = 0 is the ground
-        Vector3 _batPos = new Vector3(3, 1.5f, -2);  // floating a bit above the ground
-        bool _slimeFacingLeft;
 
         TextureAtlas _robo_atlas;
         enum Direction { Front, Back, Left, Right };
         enum RoboState { Idle, Walk };
         Animation[,] _robo_anims = new Animation[2, 4];
-        AnimatedSprite _robo;
+        AnimatedSprite[] _robo = new AnimatedSprite[2];
         RoboState _robo_state = RoboState.Idle;
         Direction _robo_dir = Direction.Front;
         Vector3 _robo_facing = Vector3.Backward;
@@ -37,16 +29,12 @@ namespace LudumDare60
         int _robo_walk = (int)RoboState.Walk;
 
         // Audio -> SFX and Music
-        private SoundEffect _bounce_sfx;
-        private SoundEffect _collect_sfx;
-
         private SoundEffect _step_sfx;
-        private Random _rng = new Random();
         int _robo_last_frame = -1;
 
         private int[] walk_frames = { 0, 2 };
 
-        public Game1() : base("Dungeon Slime", 1280, 720, false) { }
+        public Game1() : base("LudumDare60", 1280, 720, false) { }
 
         protected override void Initialize()
         {
@@ -59,9 +47,6 @@ namespace LudumDare60
 
         protected override void LoadContent()
         {
-            _atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
-            _slime = _atlas.CreateAnimatedSprite("slime-animation");
-
             _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
             _robo_anims[_robo_idle, (int)Direction.Front] = _robo_atlas.GetAnimation("robo-idle-front-animation");
             _robo_anims[_robo_idle, (int)Direction.Back] = _robo_atlas.GetAnimation("robo-idle-back-animation");
@@ -76,9 +61,6 @@ namespace LudumDare60
 
             _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
             _robo.Scale = new Vector2(0.5f, 0.5f);
-
-            _bounce_sfx = Content.Load<SoundEffect>("audio/sfx/bounce");
-            _collect_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
 
             Song theme = Content.Load<Song>("audio/music/theme");
 
@@ -121,6 +103,7 @@ namespace LudumDare60
         {
             _step_sfx.Play(volume: 0.6f, pitch: 0f, pan: 0f);
         }
+
         protected override void Update(GameTime gameTime)
         {
             var kb = Keyboard.GetState();
@@ -155,8 +138,6 @@ namespace LudumDare60
 
             RoboState state = move != Vector3.Zero ? RoboState.Walk : RoboState.Idle;
             Direction dir = PickDirection(_robo_facing, _camera);
-
-           
 
             if (_robo_anims[(int)state, (int)dir] == null)
                 state = RoboState.Idle;
