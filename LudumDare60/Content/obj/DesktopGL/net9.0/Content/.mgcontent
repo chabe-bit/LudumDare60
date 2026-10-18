@@ -4,11 +4,17 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/music/theme.ogg</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/bounce.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/collect.wav</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/atlas.png</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/monogames_logo.png</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/robot_spritesheet.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

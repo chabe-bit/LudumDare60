@@ -37,8 +37,15 @@ namespace LudumDare60
         int _robo_walk = (int)RoboState.Walk;
 
         // Audio -> SFX and Music
+        private SoundEffect _bounce_sfx;
+        private SoundEffect _collect_sfx;
 
-        
+        private SoundEffect _step_sfx;
+        private Random _rng = new Random();
+        int _robo_last_frame = -1;
+
+        private int[] walk_frames = { 0, 2 };
+
         public Game1() : base("Dungeon Slime", 1280, 720, false) { }
 
         protected override void Initialize()
@@ -56,19 +63,37 @@ namespace LudumDare60
             _slime = _atlas.CreateAnimatedSprite("slime-animation");
 
             _robo_atlas = TextureAtlas.FromFile(Content, "images/robo-atlas-definition.xml");
-            _robo_anims[_robo_idle, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-idle-front-animation");
-            _robo_anims[_robo_idle, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-idle-back-animation");
-            _robo_anims[_robo_idle, (int)Direction.Right]  = _robo_atlas.GetAnimation("robo-idle-right-animation");
-            _robo_anims[_robo_idle, (int)Direction.Left]   = _robo_anims[_robo_idle, (int)Direction.Right];
+            _robo_anims[_robo_idle, (int)Direction.Front] = _robo_atlas.GetAnimation("robo-idle-front-animation");
+            _robo_anims[_robo_idle, (int)Direction.Back] = _robo_atlas.GetAnimation("robo-idle-back-animation");
+            _robo_anims[_robo_idle, (int)Direction.Right] = _robo_atlas.GetAnimation("robo-idle-right-animation");
+            _robo_anims[_robo_idle, (int)Direction.Left] = _robo_anims[_robo_idle, (int)Direction.Right];
 
-            _robo_anims[_robo_walk, (int)Direction.Front]  = _robo_atlas.GetAnimation("robo-walk-front-animation");
-            _robo_anims[_robo_walk, (int)Direction.Back]   = _robo_atlas.GetAnimation("robo-walk-back-animation");
-            _robo_anims[_robo_walk, (int)Direction.Right]  = _robo_atlas.GetAnimation("robo-walk-right-animation");
-            _robo_anims[_robo_walk, (int)Direction.Left]   = _robo_anims[_robo_walk, (int)Direction.Right];
+            _robo_anims[_robo_walk, (int)Direction.Front] = _robo_atlas.GetAnimation("robo-walk-front-animation");
+            _robo_anims[_robo_walk, (int)Direction.Back] = _robo_atlas.GetAnimation("robo-walk-back-animation");
+            _robo_anims[_robo_walk, (int)Direction.Right] = _robo_atlas.GetAnimation("robo-walk-right-animation");
+            _robo_anims[_robo_walk, (int)Direction.Left] = _robo_anims[_robo_walk, (int)Direction.Right];
 
 
             _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
             _robo.Scale = new Vector2(0.5f, 0.5f);
+
+            _bounce_sfx = Content.Load<SoundEffect>("audio/sfx/bounce");
+            _collect_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
+
+            Song theme = Content.Load<Song>("audio/music/theme");
+
+
+            if (MediaPlayer.State == MediaState.Playing)
+            {
+                MediaPlayer.Stop();
+            }
+
+            MediaPlayer.Play(theme);
+            MediaPlayer.IsRepeating = true;
+
+
+            _step_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
+            
         }
 
         private void SetAnimation(RoboState state, Direction dir)
@@ -80,15 +105,22 @@ namespace LudumDare60
             if (anim == null)
             {
                 Debug.WriteLine($"ERROR: no animation for {state}, {dir}");
-                return;   
+                return;
             }
 
+            _robo_last_frame = -1;
             _robo_state = state;
             _robo_dir = dir;
             _robo.Animation = anim;
             _robo.Effects = dir == Direction.Left ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
         }
 
+        // SFX => [ Attack, Footsteps, Jump?, COllision (walls and enemies), ...]
+        // Music => Title screen? In-Game theme
+        private void PlayStep()
+        {
+            _step_sfx.Play(volume: 0.6f, pitch: 0f, pan: 0f);
+        }
         protected override void Update(GameTime gameTime)
         {
             var kb = Keyboard.GetState();
@@ -96,23 +128,11 @@ namespace LudumDare60
 
             if (kb.IsKeyDown(Keys.Escape)) Exit();
 
-            // --- camera orbit: Q/E rotate, R/F tilt, Z/X zoom ---
-            float rotSpeed = MathHelper.ToRadians(90f);
-            if (kb.IsKeyDown(Keys.Q)) _camera.Yaw -= rotSpeed * dt;
-            if (kb.IsKeyDown(Keys.E)) _camera.Yaw += rotSpeed * dt;
-            if (kb.IsKeyDown(Keys.R)) _camera.Pitch += rotSpeed * dt;
-            if (kb.IsKeyDown(Keys.F)) _camera.Pitch -= rotSpeed * dt;
-            if (kb.IsKeyDown(Keys.Z)) _camera.Distance -= 10f * dt;
-            if (kb.IsKeyDown(Keys.X)) _camera.Distance += 10f * dt;
-            _camera.ClampPitch();
-            _camera.Distance = MathHelper.Clamp(_camera.Distance, 3f, 40f);
-
-            // --- slime movement: WASD relative to where the camera faces ---
             Vector3 move = Vector3.Zero;
-            if (kb.IsKeyDown(Keys.W)) move += _camera.Forward;
-            if (kb.IsKeyDown(Keys.S)) move -= _camera.Forward;
-            if (kb.IsKeyDown(Keys.D)) move += _camera.Right;
-            if (kb.IsKeyDown(Keys.A)) move -= _camera.Right;
+            if (kb.IsKeyDown(Keys.W)) { move += _camera.Forward; }
+            if (kb.IsKeyDown(Keys.S)) { move -= _camera.Forward; }
+            if (kb.IsKeyDown(Keys.D)) { move += _camera.Right; }
+            if (kb.IsKeyDown(Keys.A)) { move -= _camera.Right; }
 
             if (move != Vector3.Zero)
             {
@@ -121,8 +141,22 @@ namespace LudumDare60
                 _robo_facing = move;
             }
 
+            int frame = _robo.CurrFrame;
+            if (frame != _robo_last_frame)
+            {
+                if (_robo_state == RoboState.Walk && Array.IndexOf(walk_frames, frame) >= 0)
+                {
+                    PlayStep();
+                }
+
+                _robo_last_frame = frame;
+            }
+            
+
             RoboState state = move != Vector3.Zero ? RoboState.Walk : RoboState.Idle;
             Direction dir = PickDirection(_robo_facing, _camera);
+
+           
 
             if (_robo_anims[(int)state, (int)dir] == null)
                 state = RoboState.Idle;

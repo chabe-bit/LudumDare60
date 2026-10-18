@@ -9,6 +9,8 @@ namespace MonoGameLibrary.Graphics
         private TimeSpan _elapsed; // track time between each frame 
         private Animation _animation; // playlist of animation being played 
 
+        public int CurrFrame => _curr_frame;
+
         public Animation Animation
         {
             // what is this syntax C# ???
