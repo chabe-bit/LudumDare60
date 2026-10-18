@@ -30,12 +30,16 @@ namespace LudumDare60
         // Audio -> SFX and Music
         private SoundEffect _step_sfx;
         int _robo_last_frame = -1;
-
         private int[] walk_frames = { 0, 2 };
 
+        World _world = new World();
+        int _player;
+        float _spawn_timer = 1f;
+        const float spawn_interval = 3f;
+        const int max_enemies = 10;
+
+
         public Game1() : base("LudumDare60", 1280, 720, false) { }
-
-
 
         protected override void Initialize()
         {
@@ -76,7 +80,23 @@ namespace LudumDare60
 
 
             _step_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
-            
+
+            _player = SpawnRobot(Vector3.Zero, 5f, Component.Input);
+        }
+
+        private int SpawnRobot(Vector3 pos, float speed, Component extra_flags)
+        {
+            int ent = _world.Create(Component.Position | Component.Move | Component.Sprite | extra_flags);
+            if (ent < 0)
+                return -1;
+
+            _world._pos[ent] = pos;
+            _world._facing[ent] = Vector3.Backward;
+            _world._speed[ent] = speed;
+            _world._sprite[ent] = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
+            _world._anim[ent] = new AnimState { state = RoboState.Idle, dir = Direction.Front, last_frame = -1 };
+
+            return ent;
         }
 
         private void SetAnimation(RoboState state, Direction dir)

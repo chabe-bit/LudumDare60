@@ -18,7 +18,7 @@ namespace LudumDare60
         Enemy           = 1 << 6,
         Dead            = 1 << 7,
     }
-    internal class AnimState
+    public struct AnimState
     {
         public RoboState state;
         public Direction dir;
@@ -37,7 +37,8 @@ namespace LudumDare60
         public Vector3[] _facing = new Vector3[max_entities];
         public Vector3[] _move = new Vector3[max_entities];
         public float[] _speed = new float[max_entities];
-        public AnimatedSprite[] _sprite = new AnimatedSprite[max_entities];        
+        public AnimatedSprite[] _sprite = new AnimatedSprite[max_entities];
+        public AnimState[] _anim = new AnimState[max_entities];
         public int[] _hp = new int[max_entities]; 
 
         readonly Stack<int> _free = new();
