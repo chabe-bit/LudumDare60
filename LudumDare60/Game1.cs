@@ -108,14 +108,16 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGameLibrary;
-using MonoGameLibrary.Graphics;
-using System.Data; // We now have access to the Texture methods from MGL
+using MonoGameLibrary.Graphics; // We now have access to the Texture methods from MGL
 
 namespace LudumDare60
 {
     public class Game1 : Core
     {
         private AnimatedSprite _slime;
+
+        private Vector2 _slime_pos;
+        private const float MOVEMENT_SPEED = 5.0f;
 
         public Game1() : base("LudumDare60", 1280, 720, false)
         {
@@ -133,14 +135,7 @@ namespace LudumDare60
         {
             base.LoadContent();
 
-            /* 
-            Texture2D atlas_texture = Content.Load<Texture2D>("images/atlas");
-            TextureAtlas atlas = new TextureAtlas(atlas_texture);
-
-            // Created the regions and ID'd by name  
-            atlas.AddRegion("slime", 0, 0, 20, 20);
-            atlas.AddRegion("bat", 20, 0, 20, 20);
-            */
+          
 
             TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
 
@@ -157,8 +152,51 @@ namespace LudumDare60
 
             _slime.Update(gameTime);
 
+            CheckKeyboardInput();
+            CheckGamePadInput();
+
             base.Update(gameTime);
         }
+
+        private void CheckKeyboardInput()
+        {
+            KeyboardState keyboard_state = Keyboard.GetState();
+            float speed = MOVEMENT_SPEED;
+
+            if (keyboard_state.IsKeyDown(Keys.Space))
+            {
+                
+            }
+
+            if (keyboard_state.IsKeyDown(Keys.W))
+            {
+                _slime_pos.Y -= speed;
+            }
+
+            if (keyboard_state.IsKeyDown(Keys.S))
+            {
+                _slime_pos.Y += speed;
+            }
+
+            if (keyboard_state.IsKeyDown(Keys.A))
+            {
+                _slime_pos.X -= speed;
+            }
+
+            if (keyboard_state.IsKeyDown(Keys.D))
+            {
+                _slime_pos.X += speed;
+            }
+        }
+
+
+
+
+        private void CheckGamePadInput()
+        {
+
+        }
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -166,13 +204,12 @@ namespace LudumDare60
 
             // TODO: Add your drawing code here
             SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            _slime.Draw(SpriteBatch, Vector2.Zero);
 
+            _slime.Draw(SpriteBatch, _slime_pos);
+                
             SpriteBatch.End();
 
             base.Draw(gameTime);       
         }
     }
 }
-
-
