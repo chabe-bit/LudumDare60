@@ -18,5 +18,17 @@ namespace LudumDare60
         // AI 
         const float chase_stop_distance = 1.2f;
 
+        // Combat 
+        const float attack_cooldown_time = 0.4f;
+
+        // Animation 
+        
+
+        void UpdateEntities(KeyboardState keyboard, float dt, GameTime game_time)
+        {
+            
+        }
+    
+        
     }
 }

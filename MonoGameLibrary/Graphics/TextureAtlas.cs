@@ -187,5 +187,10 @@ namespace MonoGameLibrary.Graphics
             return new AnimatedSprite(animation);
         }
 
+        public bool TryGetAnimation(string name, out Animation anim)
+        {
+            return _animations.TryGetValue(name, out anim);
+        }
+
     }
 }

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/enemy_spritesheet</Texture>
+	<Regions>
+		<Region name="enemy-walk-left"  x="0"   y="0"   width="750" height="500" />
+		<Region name="enemy-walk-right" x="750" y="0"   width="750" height="500" />
+
+		<Region name="enemy-attack-1"   x="0"     y="500" width="750" height="500" />
+		<Region name="enemy-attack-2"   x="750"   y="500" width="750" height="500" />
+		<Region name="enemy-attack-3"   x="1500"  y="500" width="750" height="500" />
+
+
+	</Regions>
+	<Animations>
+		<Animation name ="enemy-walk-animation" delay="250">
+			<Frame region="enemy-walk-left"/>
+			<Frame region="enemy-walk-right"/>
+		</Animation>
+		<Animation name ="enemy-attack-animation" delay="250">
+			<Frame region="enemy-attack-1"/>
+			<Frame region="enemy-attack-2"/>
+			<Frame region="enemy-attack-3"/>
+		</Animation>
+		
+	</Animations>
+</TextureAtlas>
+

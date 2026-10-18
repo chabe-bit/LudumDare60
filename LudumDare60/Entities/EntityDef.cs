@@ -42,9 +42,24 @@ namespace LudumDare60
             }
         }
 
-        public void LoadAnim(string name)
+        public void LoadAnim(string prefix)
         {
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    string state = ((RoboState)i).ToString().ToLowerInvariant();
+                    string dir = ((Direction)j).ToString().ToLowerInvariant();
+                    string name = $"{prefix}-{state}-{dir}-animation";
 
+                    if (atlas.TryGetAnimation(name, out Animation anim))
+                    {
+                        sprite_anims[i, j] = anim; 
+                    }
+                }
+
+              
+            }
         }
     }
 }

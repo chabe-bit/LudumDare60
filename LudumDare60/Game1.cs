@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Media;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace LudumDare60
@@ -17,7 +18,6 @@ namespace LudumDare60
         BillboardRenderer _billboards;
 
         TextureAtlas _robo_atlas;
-
         Animation[,] _robo_anims = new Animation[2, 4];
         AnimatedSprite _robo;
         RoboState _robo_state = RoboState.Idle;
@@ -32,12 +32,26 @@ namespace LudumDare60
         int _robo_last_frame = -1;
         private int[] walk_frames = { 0, 2 };
 
-        World _world = new World();
         int _player;
         float _spawn_timer = 1f;
         const float spawn_interval = 3f;
         const int max_enemies = 10;
         Vector3 move = Vector3.Zero;
+
+        List<Entity> _entities = new();
+
+        // Enemy will walk one side, pause, walk back and pause while not aggroed
+        
+        enum EnemyState { Idle, Walk, Chase, Attack };
+        TextureAtlas _e_robo_atlas;
+        Animation[] _e_robo_anims = new Animation[3];
+        AnimatedSprite _e_robo;
+        Vector3 _e_robo_facing = Vector3.Backward;
+        Vector3 _e_robo_pos;
+        EnemyState _e_robo_state = EnemyState.Idle;
+        Direction _e_robo_dir = Direction.Left;
+        int _e_robo_idle = (int)EnemyState.Idle;
+        int _e_robo_attack = (int)EnemyState.Attack;
 
 
         public Game1() : base("LudumDare60", 1280, 720, false) { }
@@ -58,15 +72,22 @@ namespace LudumDare60
             _robo_anims[_robo_idle, (int)Direction.Back] = _robo_atlas.GetAnimation("robo-idle-back-animation");
             _robo_anims[_robo_idle, (int)Direction.Right] = _robo_atlas.GetAnimation("robo-idle-right-animation");
             _robo_anims[_robo_idle, (int)Direction.Left] = _robo_anims[_robo_idle, (int)Direction.Right];
-
             _robo_anims[_robo_walk, (int)Direction.Front] = _robo_atlas.GetAnimation("robo-walk-front-animation");
             _robo_anims[_robo_walk, (int)Direction.Back] = _robo_atlas.GetAnimation("robo-walk-back-animation");
             _robo_anims[_robo_walk, (int)Direction.Right] = _robo_atlas.GetAnimation("robo-walk-right-animation");
             _robo_anims[_robo_walk, (int)Direction.Left] = _robo_anims[_robo_walk, (int)Direction.Right];
-
-
             _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
             _robo.Scale = new Vector2(0.5f, 0.5f);
+
+
+            _e_robo_atlas = TextureAtlas.FromFile(Content, "images/enemy-atlas-definition.xml");
+            _e_robo_anims[_e_robo_attack] = _e_robo_atlas.GetAnimation("enemy-attack-animation");
+            _e_robo = _e_robo_atlas.CreateAnimatedSprite("enemy-walk-animation");
+            _e_robo.Scale = new Vector2(0.5f, 0.5f);
+
+            
+
+
 
             Song theme = Content.Load<Song>("audio/music/theme");
 
@@ -82,45 +103,10 @@ namespace LudumDare60
 
             _step_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
 
-            _player = SpawnRobot(Vector3.Zero, 5f, Component.Input);
         }
+        
 
-        private int SpawnRobot(Vector3 pos, float speed, Component extra_flags)
-        {
-            int ent = _world.Create(Component.Position | Component.Move | Component.Sprite | extra_flags);
-            if (ent < 0)
-                return -1;
 
-            _world._pos[ent] = pos;
-            _world._facing[ent] = Vector3.Backward;
-            _world._speed[ent] = speed;
-            _world._sprite[ent] = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
-            _world._anim[ent] = new AnimState { state = RoboState.Idle, dir = Direction.Front, last_frame = -1 };
-
-            return ent;
-        }
-
-        // Abstracting away Keyboard 
-        private void InputSystem(KeyboardState kb)
-        {
-            if (kb.IsKeyDown(Keys.Escape)) Exit();
-
-        }
-
-        private void MovementSystem(float dt)
-        {
-            if (move != Vector3.Zero)
-            {
-                move.Normalize();
-                _robo_pos += move * 5f * dt;
-                _robo_facing = move;
-            }
-        }
-
-        private void AnimationSystem(GameTime game_time)
-        {
-
-        }
 
         private void SetAnimation(RoboState state, Direction dir)
         {
@@ -160,13 +146,15 @@ namespace LudumDare60
             if (kb.IsKeyDown(Keys.D)) { move += _camera.Right; }
             if (kb.IsKeyDown(Keys.A)) { move -= _camera.Right; }
             
-            /*        
+                 
             if (move != Vector3.Zero)
             {
                 move.Normalize();
                 _robo_pos += move * 5f * dt;
                 _robo_facing = move;
             }
+
+
             int frame = _robo.CurrFrame;
             if (frame != _robo_last_frame)
             {
@@ -184,7 +172,7 @@ namespace LudumDare60
                 state = RoboState.Idle;
             SetAnimation(state, dir);
             _robo.Update(gameTime);
-            */
+            
 
             // camera follows the robot
             _camera.Target = _robo_pos;
