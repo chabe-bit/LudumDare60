@@ -40,6 +40,8 @@ namespace LudumDare60
 
         List<Entity> _entities = new();
 
+        EntityDef _player_def;
+
         // Enemy will walk one side, pause, walk back and pause while not aggroed
         TextureAtlas _e_robo_atlas;
         EntityDef _enemy_def;
@@ -50,8 +52,46 @@ namespace LudumDare60
         const float recover_time = 0.5f;
         const float enemy_attack_cooldown = 0.8f;
         const float spin_dist_px = 330f;
-        const float player_radius = 0.25f;
+        const float player_radius = 0.4f;
         const int spin_damage = 1;
+
+        // Fixed enemy spawns: position and the direction they face and patrol along
+        static readonly (Vector3 pos, Vector3 facing)[] s_enemy_spawns =
+        {
+            (new Vector3(6f, 0f, -4f), Vector3.Right),
+            (new Vector3(-8f, 0f, -6f), Vector3.Backward),
+            (new Vector3(4f, 0f, 7f), Vector3.Left),
+        };
+
+        // Patrol
+        const float patrol_dist = 4f;           // how far from spawn the patrol walks
+        const float patrol_pause_time = 1.2f;
+        const float patrol_walk_timeout = 6f;   // blocked by another enemy: give up and turn around
+        const float arrive_dist = 0.1f;
+
+        // Aggro / chase
+        const float aggro_range = 7f;
+        const float aggro_cone_cos = 0.7f;      // cos(45°): sees 45° either side of facing
+        const float chase_speed_mult = 1.4f;    // 2.5 * 1.4 = 3.5, still slower than the player's 5
+
+        // Scrap (mocked with the slime sprite until there's scrap art)
+        TextureAtlas _scrap_atlas;
+        List<Pickup> _pickups = new();
+        SoundEffect _collect_sfx;
+        int _scrap;
+
+        const float scrap_scale = 8f;            // slime is 20px; unscaled it'd be 0.08 units at 250 px per unit
+        const float scrap_pickup_radius = 0.4f;
+
+        // Fixed scrap spots, a few placed on enemy patrol routes
+        static readonly Vector3[] s_scrap_spawns =
+        {
+            new Vector3(2f, 0f, -2f),
+            new Vector3(-3f, 0f, 1f),
+            new Vector3(8f, 0f, -4f),     // in the right enemy's patrol
+            new Vector3(-8f, 0f, -3f),    // in the left enemy's patrol
+            new Vector3(2f, 0f, 7f),      // in the bottom enemy's patrol
+        };
 
         public Game1() : base("LudumDare60", 1280, 720, false) { }
 
@@ -93,10 +133,16 @@ namespace LudumDare60
                 attack_anim = _e_robo_atlas.GetAnimation("enemy-attack-animation")
             };
 
-            SpawnEnemy(new Vector3(3f, 0f, -3f));
+            foreach (var (pos, facing) in s_enemy_spawns)
+                SpawnEnemy(pos, facing);
+
+            _scrap_atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
+            _collect_sfx = Content.Load<SoundEffect>("audio/sfx/collect");
+            foreach (Vector3 pos in s_scrap_spawns)
+                SpawnScrap(pos, 1);
 
 
-            Song theme = Content.Load<Song>("audio/music/theme");
+            Song theme = Content.Load<Song>("audio/music/bgm");
 
 
             if (MediaPlayer.State == MediaState.Playing)
@@ -112,13 +158,16 @@ namespace LudumDare60
 
         }
         
-        private Entity SpawnEnemy(Vector3 pos)
+        private Entity SpawnEnemy(Vector3 pos, Vector3 facing)
         {
             var ent = new Entity
             {
                 ai = EnemyState.Walk,
                 def = _enemy_def,
                 pos = pos,
+                facing = facing,
+                patrol_a = pos,
+                patrol_b = pos + facing * patrol_dist,
                 hp = _enemy_def.max_hp,
                 is_enemy = true,
                 sprite = new AnimatedSprite(_enemy_def.walk_anim) { Scale = _enemy_def.scale }
@@ -128,6 +177,34 @@ namespace LudumDare60
             return ent;
         }
 
+        // Enemies can call this on death later to drop scrap
+        private void SpawnScrap(Vector3 pos, int value)
+        {
+            var sprite = _scrap_atlas.CreateAnimatedSprite("slime-animation");
+            sprite.Scale = new Vector2(scrap_scale, scrap_scale);
+            _pickups.Add(new Pickup { pos = pos, value = value, sprite = sprite });
+        }
+
+        private void UpdatePickups(GameTime game_time)
+        {
+            float reach = scrap_pickup_radius + player_radius;
+
+            // backwards so RemoveAt doesn't skip the next pickup
+            for (int i = _pickups.Count - 1; i >= 0; i--)
+            {
+                Pickup p = _pickups[i];
+                p.sprite.Update(game_time);
+
+                if (FlatDistSquare(p.pos, _robo_pos) < reach * reach)
+                {
+                    _scrap += p.value;
+                    _collect_sfx.Play(0.8f, 0.5f, 0f);   // pitched up: footsteps use the same wav
+                    _pickups.RemoveAt(i);
+                    Window.Title = $"LudumDare60 - Scrap: {_scrap}";   // stand-in HUD until there's a font
+                }
+            }
+        }
+
         private void SetEnemyState(Entity ent, EnemyState state)
         {
             ent.ai = state;
@@ -135,6 +212,64 @@ namespace LudumDare60
             ent.last_frame = -1;
 
             ent.sprite.Animation = state == EnemyState.Attack ? ent.def.attack_anim : ent.def.walk_anim;
+        }
+
+        private void MoveEnemy(Entity ent, Vector3 dir, float speed, float dt)
+        {
+            dir.Y = 0f;
+            if (dir.LengthSquared() < 0.0001f) return;
+            dir.Normalize();
+            ent.facing = dir;
+            ent.pos += dir * speed * dt;
+        }
+
+        private bool CanSeePlayer(Entity ent, Vector3 player_pos)
+        {
+            Vector3 to_player = player_pos - ent.pos;
+            to_player.Y = 0f;
+            float dist = to_player.Length();
+
+            if (dist > aggro_range) return false;
+            return dist < 0.001f || Vector3.Dot(ent.facing, to_player / dist) >= aggro_cone_cos;
+        }
+
+        // Also call this from the player's attack, so hitting an enemy from behind aggros it
+        private void Aggro(Entity ent)
+        {
+            if (ent.ai == EnemyState.Idle || ent.ai == EnemyState.Walk)
+                SetEnemyState(ent, EnemyState.Chase);
+        }
+
+        // Circles push each other apart so nothing overlaps
+        private void SeparateEntities()
+        {
+            for (int i = 0; i < _entities.Count; i++)
+            {
+                Entity a = _entities[i];
+                if (a.dead) continue;
+
+                PushApart(ref a.pos, ref _robo_pos, a.def.radius, player_radius);
+                for (int j = i + 1; j < _entities.Count; j++)
+                {
+                    Entity b = _entities[j];
+                    if (b.dead) continue;
+                    PushApart(ref a.pos, ref b.pos, a.def.radius, b.def.radius);
+                }
+            }
+        }
+
+        private static void PushApart(ref Vector3 a, ref Vector3 b, float radius_a, float radius_b)
+        {
+            float dx = b.X - a.X, dz = b.Z - a.Z;
+            float min = radius_a + radius_b;
+            float d2 = dx * dx + dz * dz;
+            if (d2 >= min * min) return;
+
+            float d = MathF.Sqrt(d2);
+            Vector2 n = d > 0.0001f ? new Vector2(dx / d, dz / d) : Vector2.UnitX;   // exactly on top: pick any direction
+            float half = (min - d) * 0.5f;
+            a.X -= n.X * half; a.Z -= n.Y * half;
+            b.X += n.X * half; b.Z += n.Y * half;
         }
 
         private float SpinReach(Entity ent) => spin_dist_px / _billboards.PixelsPerUnit * ent.sprite.Scale.X;
@@ -162,12 +297,45 @@ namespace LudumDare60
 
             switch (ent.ai)
             {
-                case EnemyState.Idle:
                 case EnemyState.Walk:
-                case EnemyState.Chase:
-                    if (ent.attack_cooldown <= 0f && dist_square < hit_radius * hit_radius * 0.8f)
-                        SetEnemyState(ent, EnemyState.StartupFrame);
+                {
+                    if (CanSeePlayer(ent, player_pos)) { Aggro(ent); break; }
+
+                    Vector3 target = ent.patrol_to_b ? ent.patrol_b : ent.patrol_a;
+                    bool arrived = FlatDistSquare(ent.pos, target) < arrive_dist * arrive_dist;
+                    if (arrived || ent.state_timer >= patrol_walk_timeout)
+                        SetEnemyState(ent, EnemyState.Idle);
+                    else
+                        MoveEnemy(ent, target - ent.pos, ent.def.speed, dt);
                     break;
+                }
+
+                case EnemyState.Idle:
+                    if (CanSeePlayer(ent, player_pos)) { Aggro(ent); break; }
+
+                    if (ent.state_timer >= patrol_pause_time)
+                    {
+                        // turn around and walk back
+                        ent.patrol_to_b = !ent.patrol_to_b;
+                        ent.facing = -ent.facing;
+                        SetEnemyState(ent, EnemyState.Walk);
+                    }
+                    break;
+
+                case EnemyState.Chase:
+                {
+                    if (ent.attack_cooldown <= 0f && dist_square < hit_radius * hit_radius * 0.8f)
+                    {
+                        SetEnemyState(ent, EnemyState.StartupFrame);
+                        break;
+                    }
+
+                    // hold just outside the player while the attack cools down
+                    float stop = hit_radius * 0.6f;
+                    if (dist_square > stop * stop)
+                        MoveEnemy(ent, player_pos - ent.pos, ent.def.speed * chase_speed_mult, dt);
+                    break;
+                }
 
                 case EnemyState.StartupFrame:
                     if (ent.state_timer >= startup_time)
@@ -292,7 +460,7 @@ namespace LudumDare60
                 state = RoboState.Idle;
             SetAnimation(state, dir);
             _robo.Update(gameTime);
-            
+
             foreach (Entity ent in  _entities)
             {
                 if (ent.dead || !ent.is_enemy)
@@ -304,9 +472,11 @@ namespace LudumDare60
                     PlayerHit(ent, damage);
                 }
              }
+            SeparateEntities();
+            UpdatePickups(gameTime);
 
             _robo_hit_flash = MathF.Max(0f, _robo_hit_flash - dt);
-            _robo.Color = _robo_hit_flash > 0f ? Color.Red : Color.White;
+            //_robo.Color = _robo_hit_flash > 0f ? Color.Red : Color.White;
 
             // camera follows the robot
             _camera.Target = _robo_pos;
@@ -346,6 +516,11 @@ namespace LudumDare60
             {
                 _billboards.Draw(ent.sprite, ent.pos);
             }
+            _billboards.End();
+
+            _billboards.Begin(view, projection, _scrap_atlas.Texture);
+            foreach (Pickup p in _pickups)
+                _billboards.Draw(p.sprite, p.pos);
             _billboards.End();
 
 

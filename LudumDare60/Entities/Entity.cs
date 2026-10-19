@@ -27,6 +27,9 @@ namespace LudumDare60
         public float attack_cooldown;
         public bool attack_hit_completed;
         public bool is_enemy;
+        public Vector3 patrol_a;            // spawn point
+        public Vector3 patrol_b;            // far end of the patrol
+        public bool patrol_to_b = true;
 
 
 

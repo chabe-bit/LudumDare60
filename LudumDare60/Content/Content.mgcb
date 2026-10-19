@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin audio/music/bgm.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:audio/music/bgm.ogg
+
 #begin audio/music/theme.ogg
 /importer:OggImporter
 /processor:SongProcessor
