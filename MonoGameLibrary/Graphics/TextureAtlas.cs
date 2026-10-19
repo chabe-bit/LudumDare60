@@ -89,9 +89,7 @@ namespace MonoGameLibrary.Graphics
 
                     string texture_path = root.Element("Texture").Value;
                     atlas.Texture = content.Load<Texture2D>(texture_path);
-                    
-                    // The ? operator is a null guard. It says, under "Regions", is there 
-                    // an element "Region"?
+
                     var regions = root.Element("Regions")?.Elements("Region");
                 
                     if (regions != null)

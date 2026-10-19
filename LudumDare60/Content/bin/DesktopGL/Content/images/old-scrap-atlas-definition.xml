@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/old_scrap</Texture>
+	<Regions>
+		<Region name="old-scrap" x="0" y="0" width="200" height="150" />
+	</Regions>
+	<Animations>
+		<Animation name="old-scrap-animation" delay="1000">
+			<Frame region="old-scrap"/>
+		</Animation>
+	</Animations>
+</TextureAtlas>

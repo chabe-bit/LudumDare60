@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/medium_bush</Texture>
+	<Regions>
+		<Region name="medium-bush" x="0" y="0" width="290" height="200" />
+	</Regions>
+</TextureAtlas>

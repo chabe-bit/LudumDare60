@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/wall_stain</Texture>
+	<Regions>
+		<Region name="wall-stain" x="0" y="0" width="800" height="550" />
+	</Regions>
+</TextureAtlas>

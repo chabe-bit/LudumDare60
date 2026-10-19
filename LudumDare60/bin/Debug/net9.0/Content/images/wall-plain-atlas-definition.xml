@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/wall_plain</Texture>
+	<Regions>
+		<Region name="wall-plain" x="17" y="8" width="770" height="529" />
+	</Regions>
+</TextureAtlas>

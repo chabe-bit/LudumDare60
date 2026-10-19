@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/large_bush</Texture>
+	<Regions>
+		<Region name="large-bush" x="0" y="0" width="550" height="200" />
+	</Regions>
+</TextureAtlas>

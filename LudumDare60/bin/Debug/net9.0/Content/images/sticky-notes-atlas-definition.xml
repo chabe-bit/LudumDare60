@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/sticky_notes</Texture>
+	<Regions>
+		<Region name="sticky-notes" x="0" y="0" width="190" height="300" />
+	</Regions>
+</TextureAtlas>

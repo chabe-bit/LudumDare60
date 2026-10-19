@@ -24,7 +24,7 @@ namespace LudumDare60
         public SoundEffect[] step_sfx;
         public SoundEffect[] attack_sfx; // todo 
         public SoundEffect[] death_sfx; // todo 
-        public int[] walk_frames = { 0, 2 };
+        public int[,] step_frames;
 
         public Animation[,] sprite_anims = new Animation[2, 4];
         public bool[,] sprite_flip = new bool[2, 4];
@@ -32,6 +32,9 @@ namespace LudumDare60
 
         public Animation walk_anim;
         public Animation attack_anim;
+
+        public float spin_px;
+        public int spins = 1;
 
         public void SetAnim(Animation anim)
         {
@@ -57,11 +60,15 @@ namespace LudumDare60
 
                     if (atlas.TryGetAnimation(name, out Animation anim))
                     {
-                        sprite_anims[i, j] = anim; 
+                        sprite_anims[i, j] = anim;
                     }
                 }
 
-              
+                if (sprite_anims[i, (int)Direction.Left] == null)
+                {
+                    sprite_anims[i, (int)Direction.Left] = sprite_anims[i, (int)Direction.Right];
+                    sprite_flip[i, (int)Direction.Left] = true;
+                }
             }
         }
     }

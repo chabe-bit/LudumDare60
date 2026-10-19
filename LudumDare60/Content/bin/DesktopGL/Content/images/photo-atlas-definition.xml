@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/photo</Texture>
+	<Regions>
+		<Region name="photo" x="0" y="0" width="90" height="120" />
+	</Regions>
+</TextureAtlas>

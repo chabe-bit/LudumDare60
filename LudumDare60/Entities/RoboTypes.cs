@@ -2,5 +2,5 @@
 {
     public enum EnemyState { Idle, Walk, Chase, StartupFrame, Attack, RecoverFrame };
     public enum Direction { Front, Back, Left, Right };
-    public enum RoboState { Idle, Walk };
+    public enum RoboState { Idle, Walk, Attack };
 }

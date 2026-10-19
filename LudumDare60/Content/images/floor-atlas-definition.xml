@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas>
+	<Texture>images/floor</Texture>
+	<Regions>
+		<Region name="floor" x="0" y="0" width="1000" height="1000" />
+	</Regions>
+</TextureAtlas>

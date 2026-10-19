@@ -21,8 +21,10 @@
 		<Region name="robo-walk-right-2" x="500"  y="2000" width="500" height="500"/>
 		<Region name="robo-walk-right-3" x="1000" y="2000" width="500" height="500"/>
 		<Region name="robo-walk-right-4" x="1500" y="2000" width="500" height="500"/>
-		
-		
+
+		<Region name="robo-attack-1"     x="1000"   y="500" width="500" height="500" />
+		<Region name="robo-attack-2"     x="1500"   y="500" width="500" height="500" />
+
 	</Regions>
 	<Animations>
 		<Animation name ="robo-idle-front-animation" delay="250">
@@ -56,5 +58,11 @@
 			<Frame region="robo-walk-right-3"/>
 			<Frame region="robo-walk-right-4"/>
 		</Animation>
+		<Animation name ="robo-attack-animation" delay="83">
+			<Frame region="robo-attack-1"/>
+			<Frame region="robo-attack-2"/>
+		</Animation>
 	</Animations>
 </TextureAtlas>
+
+

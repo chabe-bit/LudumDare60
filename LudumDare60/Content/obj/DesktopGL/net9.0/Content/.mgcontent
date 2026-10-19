@@ -5,15 +5,71 @@
   <Config />
   <SourceFiles>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/music/bgm.ogg</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/music/main_bgm.ogg</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/music/theme.ogg</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/bounce.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/break_item_1.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/break_item_2.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/break_item.wav</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/collect.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/footsteps_1.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/left_footstep.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/right_footstep.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/spin_attack.wav</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/audio/sfx/wall_collsion.wav</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/atlas.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/chair.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/computer_damaged.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/computer_undamaged.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/cursor.png</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/enemy_spritesheet.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/floor.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/gear.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/hand_grabbimg.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/hand.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/large_bush.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/medium_bush.png</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/monogames_logo.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/old_scrap.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/photo.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/poster.png</File>
     <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/robot_spritesheet.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/small_bush.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/stain.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/sticky_notes.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/title_wip2.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/wall_plain.png</File>
+    <File>C:/Users/benja/source/repos/LudumDare60/LudumDare60/Content/images/wall_stain.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
