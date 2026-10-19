@@ -41,18 +41,17 @@ namespace LudumDare60
         List<Entity> _entities = new();
 
         // Enemy will walk one side, pause, walk back and pause while not aggroed
-        
-        enum EnemyState { Idle, Walk, Chase, Attack };
         TextureAtlas _e_robo_atlas;
-        Animation[] _e_robo_anims = new Animation[3];
-        AnimatedSprite _e_robo;
-        Vector3 _e_robo_facing = Vector3.Backward;
-        Vector3 _e_robo_pos;
-        EnemyState _e_robo_state = EnemyState.Idle;
-        Direction _e_robo_dir = Direction.Left;
-        int _e_robo_idle = (int)EnemyState.Idle;
-        int _e_robo_attack = (int)EnemyState.Attack;
+        EntityDef _enemy_def;
+        float _robo_hit_flash;
 
+        const float startup_time = 0.4f;
+        const int spins = 3;
+        const float recover_time = 0.5f;
+        const float enemy_attack_cooldown = 0.8f;
+        const float spin_dist_px = 330f;
+        const float player_radius = 0.25f;
+        const int spin_damage = 1;
 
         public Game1() : base("LudumDare60", 1280, 720, false) { }
 
@@ -77,16 +76,24 @@ namespace LudumDare60
             _robo_anims[_robo_walk, (int)Direction.Right] = _robo_atlas.GetAnimation("robo-walk-right-animation");
             _robo_anims[_robo_walk, (int)Direction.Left] = _robo_anims[_robo_walk, (int)Direction.Right];
             _robo = _robo_atlas.CreateAnimatedSprite("robo-idle-front-animation");
-            _robo.Scale = new Vector2(0.5f, 0.5f);
+            _robo.Scale = Vector2.One;
 
 
             _e_robo_atlas = TextureAtlas.FromFile(Content, "images/enemy-atlas-definition.xml");
-            _e_robo_anims[_e_robo_attack] = _e_robo_atlas.GetAnimation("enemy-attack-animation");
-            _e_robo = _e_robo_atlas.CreateAnimatedSprite("enemy-walk-animation");
-            _e_robo.Scale = new Vector2(0.5f, 0.5f);
+            _enemy_def = new EntityDef
+            {
+                name = "Security Bot",
+                atlas = _e_robo_atlas,
 
-            
+                speed = 2.5f,
+                max_hp = 3,
+                radius = 0.4f,
+                scale = Vector2.One,
+                walk_anim = _e_robo_atlas.GetAnimation("enemy-walk-animation"),
+                attack_anim = _e_robo_atlas.GetAnimation("enemy-attack-animation")
+            };
 
+            SpawnEnemy(new Vector3(3f, 0f, -3f));
 
 
             Song theme = Content.Load<Song>("audio/music/theme");
@@ -105,8 +112,118 @@ namespace LudumDare60
 
         }
         
+        private Entity SpawnEnemy(Vector3 pos)
+        {
+            var ent = new Entity
+            {
+                ai = EnemyState.Walk,
+                def = _enemy_def,
+                pos = pos,
+                hp = _enemy_def.max_hp,
+                is_enemy = true,
+                sprite = new AnimatedSprite(_enemy_def.walk_anim) { Scale = _enemy_def.scale }
+            };
 
+            _entities.Add(ent);
+            return ent;
+        }
 
+        private void SetEnemyState(Entity ent, EnemyState state)
+        {
+            ent.ai = state;
+            ent.state_timer = 0f;
+            ent.last_frame = -1;
+
+            ent.sprite.Animation = state == EnemyState.Attack ? ent.def.attack_anim : ent.def.walk_anim;
+        }
+
+        private float SpinReach(Entity ent) => spin_dist_px / _billboards.PixelsPerUnit * ent.sprite.Scale.X;
+
+        private float SpinTime(Entity ent)
+        {
+            Animation spin = ent.def.attack_anim;
+            return spins * spin.Frames.Count * (float)spin.Delay.TotalSeconds;
+        }
+        private static float FlatDistSquare(Vector3 a, Vector3 b)
+        {
+            float dx = a.X - b.X;
+            float dz = a.Z - b.Z; 
+            return dx * dx + dz * dz;
+        }
+
+        private int UpdateEnemy(Entity ent, Vector3 player_pos, float dt, GameTime game_time)
+        {
+            ent.state_timer += dt;
+            ent.attack_cooldown = MathF.Max(0f, ent.attack_cooldown - dt);
+
+            float hit_radius = SpinReach(ent) + player_radius;
+            float dist_square = FlatDistSquare(ent.pos, player_pos);
+            int damage = 0;
+
+            switch (ent.ai)
+            {
+                case EnemyState.Idle:
+                case EnemyState.Walk:
+                case EnemyState.Chase:
+                    if (ent.attack_cooldown <= 0f && dist_square < hit_radius * hit_radius * 0.8f)
+                        SetEnemyState(ent, EnemyState.StartupFrame);
+                    break;
+
+                case EnemyState.StartupFrame:
+                    if (ent.state_timer >= startup_time)
+                    {
+                        SetEnemyState(ent, EnemyState.Attack);
+                        ent.attack_hit_completed = false;
+                    }
+                    break;
+
+                case EnemyState.Attack:          
+                    // Sweep in a full circle
+                    if (!ent.attack_hit_completed &&
+                        dist_square < hit_radius * hit_radius)
+                    {
+                        ent.attack_hit_completed = true;
+                        damage = spin_damage;
+                    }
+                    if (ent.state_timer >= SpinTime(ent))
+                    {
+                        SetEnemyState(ent, EnemyState.RecoverFrame);
+                    }
+                    break;
+
+                case EnemyState.RecoverFrame:    
+                    if (ent.state_timer >= recover_time)
+                    {
+                        ent.attack_cooldown = enemy_attack_cooldown;
+                        SetEnemyState(ent, EnemyState.Chase);
+                    }
+                    break;
+            }
+
+            if (ent.ai == EnemyState.Walk || ent.ai == EnemyState.Chase || ent.ai ==EnemyState.Attack)
+            {
+                ent.sprite.Update(game_time);
+            }
+
+            int frame = ent.sprite.CurrFrame;
+            if (frame != ent.last_frame)
+            {
+                if (ent.ai == EnemyState.Attack && frame == 0 && ent.def.attack_sfx != null)
+                {
+                    ent.def.attack_sfx[0].Play(0.5f, 0f, 0f);
+                }
+
+                ent.last_frame = frame;
+            }
+
+            return damage;
+        }
+
+        private void PlayerHit(Entity enemy, int damage)
+        {
+            _robo_hit_flash = 0.25f;
+
+        }
 
         private void SetAnimation(RoboState state, Direction dir)
         {
@@ -165,14 +282,31 @@ namespace LudumDare60
 
                 _robo_last_frame = frame;
             }
+
+
             RoboState state = move != Vector3.Zero ? RoboState.Walk : RoboState.Idle;
             Direction dir = PickDirection(_robo_facing, _camera);
+
 
             if (_robo_anims[(int)state, (int)dir] == null)
                 state = RoboState.Idle;
             SetAnimation(state, dir);
             _robo.Update(gameTime);
             
+            foreach (Entity ent in  _entities)
+            {
+                if (ent.dead || !ent.is_enemy)
+                    continue;
+
+                int damage = UpdateEnemy(ent, _robo_pos, dt, gameTime);
+                if (damage > 0)
+                {
+                    PlayerHit(ent, damage);
+                }
+             }
+
+            _robo_hit_flash = MathF.Max(0f, _robo_hit_flash - dt);
+            _robo.Color = _robo_hit_flash > 0f ? Color.Red : Color.White;
 
             // camera follows the robot
             _camera.Target = _robo_pos;
@@ -204,11 +338,23 @@ namespace LudumDare60
             _grid.Draw(view, projection);
 
             _billboards.Begin(view, projection, _robo_atlas.Texture);
-
-
+            _billboards.Draw(_robo, _robo_pos);
             _billboards.End();
 
+            _billboards.Begin(view, projection, _e_robo_atlas.Texture);
+            foreach (Entity ent in _entities)
+            {
+                _billboards.Draw(ent.sprite, ent.pos);
+            }
+            _billboards.End();
+
+
             base.Draw(gameTime);
+        }
+
+        private Color EnemyTint(Entity ent)
+        {
+            return Color.Aqua;
         }
     }
 }

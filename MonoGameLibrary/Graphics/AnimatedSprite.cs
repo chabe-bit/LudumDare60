@@ -18,6 +18,8 @@ namespace MonoGameLibrary.Graphics
             set // okay
             {
                 _animation = value;
+                _curr_frame = 0; // restart the frame 
+                _elapsed = TimeSpan.Zero;
                 Region = _animation.Frames[0];
             }
         }

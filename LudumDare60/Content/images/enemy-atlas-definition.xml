@@ -16,7 +16,7 @@
 			<Frame region="enemy-walk-left"/>
 			<Frame region="enemy-walk-right"/>
 		</Animation>
-		<Animation name ="enemy-attack-animation" delay="250">
+		<Animation name ="enemy-attack-animation" delay="80">
 			<Frame region="enemy-attack-1"/>
 			<Frame region="enemy-attack-2"/>
 			<Frame region="enemy-attack-3"/>

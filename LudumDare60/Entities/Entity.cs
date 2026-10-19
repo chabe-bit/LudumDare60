@@ -21,7 +21,14 @@ namespace LudumDare60
 
         public bool dead;
 
-        public EntityKind kind => def.kind;
-        public bool is_enemy => def.kind != EntityKind.Player;
+        // Enemy
+        public EnemyState ai = EnemyState.Idle;
+        public float state_timer;
+        public float attack_cooldown;
+        public bool attack_hit_completed;
+        public bool is_enemy;
+
+
+
     }
 }

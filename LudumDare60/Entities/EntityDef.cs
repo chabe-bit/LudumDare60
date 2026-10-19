@@ -10,7 +10,7 @@ namespace LudumDare60
         // Entity Metadata 
         public string name;
         public TextureAtlas atlas;
-        public EntityKind kind;
+
 
         // stats 
         public float speed;
@@ -29,6 +29,9 @@ namespace LudumDare60
         public Animation[,] sprite_anims = new Animation[2, 4];
         public bool[,] sprite_flip = new bool[2, 4];
 
+
+        public Animation walk_anim;
+        public Animation attack_anim;
 
         public void SetAnim(Animation anim)
         {

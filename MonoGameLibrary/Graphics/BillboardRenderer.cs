@@ -68,8 +68,8 @@ namespace MonoGameLibrary.Graphics
         {
             if (_count == MaxQuads) Flush();
 
-            float w = src.Width / PixelsPerUnit;
-            float h = src.Height / PixelsPerUnit;
+            float w = src.Width / PixelsPerUnit * scale.X;
+            float h = src.Height / PixelsPerUnit * scale.Y;  
 
             Vector3 halfRight = _right * (w / 2f);
             Vector3 upH = _up * h;
