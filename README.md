@@ -14,8 +14,8 @@ Gameplay:
 * D - Right
 * Space - Jump
 * Enter - Attack
-* Credits:
 
+Credits:
 * Art - Dracaena
 * Sound & Design - Aki
 * Programming - Benjamin Cha
