@@ -16,6 +16,6 @@ Gameplay:
 * Enter - Attack
 * Credits:
 
-Art - Dracaena
-Sound & Design - Aki
-Programming - Benjamin Cha
+* Art - Dracaena
+* Sound & Design - Aki
+* Programming - Benjamin Cha
